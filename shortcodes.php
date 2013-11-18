@@ -90,6 +90,6 @@ function jcr_section_heading_shortcode($atts){
 
     if(!$name)
     	return false;
-    
-    return '<h3><a name="'.sanitize_title($name).'">'.$name.'</a></h3>';
+
+    return '<h3 id="'.sanitize_title($name).'">'.$name.'</h3>';
 }
