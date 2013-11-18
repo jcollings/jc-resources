@@ -8,11 +8,9 @@ Version: 0.0.1
 Author URI: http://jamescollings.co.uk
 */
 
-
 require_once plugin_dir_path(__FILE__) . '/widgets.php';
 require_once plugin_dir_path(__FILE__) . '/functions.php';
 require_once plugin_dir_path(__FILE__) . '/shortcodes.php';
-
 
 /**
  * Register Resource Post Type
@@ -230,7 +228,13 @@ function jcr_show_section_list($args, $output = true){
 	if($after)
 		echo $after;
 
-	$content = ob_get_clean();
+	if(!$before && !$after){
+		$content = '<div id="'.sanitize_title($section->name).'" class="jcr_section jcr_section_'.sanitize_title($section->name).'">' . ob_get_clean() . '</div>';
+	}else{
+		$content = ob_get_clean();
+	}
+
+	
 	
 	if($output)
 		echo $content;
