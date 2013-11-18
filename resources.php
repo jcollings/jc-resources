@@ -114,11 +114,15 @@ function jcr_show_section_info($args, $output = true){
 	if(!jcr_is_single_resource())
 		return false;
 
+	// set resource section
+	$section = isset($args['section']) ? $args['section'] : false;
+	$section = get_resource_section($section);
+
 	ob_start();
 	?>
 	<div class="jcr_section_info">
 		<img src="http://placehold.it/100x100" />
-		<h3>Section Title</h2>
+		<h3><?php echo $section->name; ?></h2>
 	</div>
 	<?php 
 	$content = ob_get_clean();
@@ -146,18 +150,10 @@ function jcr_show_section_list($args, $output = true){
 	$columns = isset($args['columns']) ? $args['columns'] : 2;
 	$title = isset($args['title']) ? $args['title'] : true;
 	$description = isset($args['description']) ? $args['description'] : true;
+	
+	// set resource section
 	$section = isset($args['section']) ? $args['section'] : false;
-
-	if(!$section){
-		$current_section = wp_get_post_terms( $post->ID, 'section');
-		$section = $current_section[0];
-	}else{
-		if($section > 0){
-			$section = get_term($section, 'section');
-		}else{
-			$section = get_term_by( 'slug', $section, 'section');
-		}
-	}
+	$section = get_resource_section($section);
 
 	if(!$section)
 		return false;
