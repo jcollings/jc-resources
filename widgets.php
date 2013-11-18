@@ -98,9 +98,12 @@ class JCR_RelatedResources extends WP_Widget {
 
 		$after .= $after_widget;
 
-		do_action( 'jcr/show_section_links', array(
+		do_action( 'jcr/show_section_list', array(
 			'before' => $before,
-			'after' => $after
+			'after' => $after,
+			'columns' => 1,
+			'title' => false,
+			'description' => false,
 		));
 
 		

@@ -136,21 +136,34 @@ function jcr_show_section_info($args, $output = true){
  * @param array $args an array of arguments
  * @param boolean $output return or output result
  */
-add_action( 'jcr/show_section_links', 'jcr_show_section_links', 10);
-function jcr_show_section_links($args, $output = true){
-
-	$before = isset($args['before']) ? $args['before'] : false;
-	$after = isset($args['after']) ? $args['after'] : false;
-
-	if(!jcr_is_single_resource())
-		return false;
+add_action( 'jcr/show_section_list', 'jcr_show_section_list', 10);
+function jcr_show_section_list($args, $output = true){
 
 	global $post;
-	ob_start();
-
 	$resource_id = $post->ID;
-	$current_section = wp_get_post_terms( $post->ID, 'section');
+	$before = isset($args['before']) ? $args['before'] : false;
+	$after = isset($args['after']) ? $args['after'] : false;
+	$columns = isset($args['columns']) ? $args['columns'] : 2;
+	$title = isset($args['title']) ? $args['title'] : true;
+	$description = isset($args['description']) ? $args['description'] : true;
+	$section = isset($args['section']) ? $args['section'] : false;
 
+	if(!$section){
+		$current_section = wp_get_post_terms( $post->ID, 'section');
+		$section = $current_section[0];
+	}else{
+		if($section > 0){
+			$section = get_term($section, 'section');
+		}else{
+			$section = get_term_by( 'slug', $section, 'section');
+		}
+	}
+
+	if(!$section)
+		return false;
+
+	ob_start();
+	
 	$resources = new WP_Query(array(
 		'post_type' => 'resource',
 		'post_parent' => 0,
@@ -158,7 +171,7 @@ function jcr_show_section_links($args, $output = true){
 			array(
 				'taxonomy' => 'section',
 				'field' => 'id',
-				'terms' => $current_section[0]->term_id
+				'terms' => $section->term_id
 			)
 		)
 	));
@@ -167,16 +180,54 @@ function jcr_show_section_links($args, $output = true){
 		echo $before;
 
 	if($resources->have_posts()){
-		echo '<ul>';
+
+		if($title !== false){
+
+			if($title === true){
+				echo '<h2 class="jcr_section_title">'.$section->name.'</h2>';
+			}else{
+				echo '<h2 class="jcr_section_title">'.$title.'</h2>';
+			}
+		}
+
+    	if($description !== false){
+    	
+	    	echo '<p class="jcr_section_description">';
+    		
+    		if($description === true){
+    			// output description from taxonomy
+    			echo $section->description;
+    		}else{
+    			// output custom description
+    			echo $description;
+    		}
+
+	    	echo '</p>';
+	    }
+
+		echo '<ul class="jcr_resource_sections">';
+
 		while($resources->have_posts()){
+
 			$resources->the_post();
-			$classes = array('menu-item');
+			$classes = array('menu-item', 'jcr_resource_section');
+
 			if(get_the_ID() == $resource_id){
 				$classes[] = 'current-menu-item';
 			}
+
+    		// set column class
+    		if($columns > 1 && $resources->current_post % intval($columns) === 0){
+    			$classes[] = 'first';
+    		}elseif($columns > 1 && $resources->current_post % intval($columns) === (intval($columns)-1)){
+    			$classes[] = 'last';
+    		}
+
 			echo '<li class="'.implode(' ', $classes).'"><a href="'.get_permalink().'">'.get_the_title().'</a></li>';
 		}
+
 		echo '</ul>';
+
 		wp_reset_postdata();
 	}
 
