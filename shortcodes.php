@@ -8,18 +8,34 @@ add_shortcode( 'jcr_section', 'jcr_section_shortcode' );
 function jcr_section_shortcode($atts){
 	extract(shortcode_atts( array(
 	    'id' => null,
-	    'slug' => null,
 	    'columns' => 2,
 	    'description' => true
     ), $atts ));
 
+    if(empty($id))
+        return;
+
     ob_start();
 
-    do_action( 'jcr/show_section_list', array(
-    	'section' => $id,
-    	'columns' => $columns,
-    	'description' => $description
-    ));
+    $ids = explode(',', $id);
+
+    foreach($ids as $id){
+
+         do_action( 'jcr/show_section_list', apply_filters( 'jcr/shortcode_section_list_args', array(
+            'section' => trim($id),
+            'columns' => $columns,
+            'description' => $description,
+            'wrapper' => 'div',
+            'wrapper_id' => '',
+            'wrapper_class' => '',
+            'container' => 'ul',
+            'container_class' => '',
+            'container_id' => '',
+            'item' => 'li',
+            'item_class' => '',
+        )));
+
+    }
 
     return ob_get_clean();
 }

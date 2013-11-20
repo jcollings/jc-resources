@@ -148,6 +148,16 @@ function jcr_show_section_list($args, $output = true){
 	$columns = isset($args['columns']) ? $args['columns'] : 2;
 	$title = isset($args['title']) ? $args['title'] : true;
 	$description = isset($args['description']) ? $args['description'] : true;
+
+	// styling options
+	$wrapper = isset($args['wrapper']) ? $args['wrapper'] : 'div';
+    $wrapper_id = isset($args['wrapper_id']) ? $args['wrapper_id'] : false;
+    $wrapper_class = isset($args['wrapper_class']) ? $args['wrapper_class'] : false;
+    $container = isset($args['container']) ? $args['container'] : 'ul';
+    $container_class = isset($args['container_class']) ? $args['container_class'] : false;
+    $container_id = isset($args['container_id']) ? $args['container_id'] : false;
+    $item = isset($args['item']) ? $args['item'] : 'li';
+    $item_class = isset($args['item_class']) ? $args['item_class'] : false;
 	
 	// set resource section
 	$section = isset($args['section']) ? $args['section'] : false;
@@ -199,7 +209,7 @@ function jcr_show_section_list($args, $output = true){
 	    	echo '</p>';
 	    }
 
-		echo '<ul class="jcr_resource_sections">';
+		echo '<'.$container.' class="jcr_resource_sections '.$container_class.'">';
 
 		while($resources->have_posts()){
 
@@ -217,10 +227,10 @@ function jcr_show_section_list($args, $output = true){
     			$classes[] = 'last';
     		}
 
-			echo '<li class="'.implode(' ', $classes).'"><a href="'.get_permalink().'">'.get_the_title().'</a></li>';
+			echo '<'.$item.' class="'.implode(' ', $classes).' '.$item_class.'"><a href="'.get_permalink().'">'.get_the_title().'</a></'.$item.'>';
 		}
 
-		echo '</ul>';
+		echo '</'.$container.'>';
 
 		wp_reset_postdata();
 	}
@@ -229,7 +239,7 @@ function jcr_show_section_list($args, $output = true){
 		echo $after;
 
 	if(!$before && !$after){
-		$content = '<div id="'.sanitize_title($section->name).'" class="jcr_section jcr_section_'.sanitize_title($section->name).'">' . ob_get_clean() . '</div>';
+		$content = '<'.$wrapper.' id="'.sanitize_title($section->name).'" class="jcr_section jcr_section_'.sanitize_title($section->name).' '.$wrapper_class.'">' . ob_get_clean() . '</'.$wrapper.'>';
 	}else{
 		$content = ob_get_clean();
 	}
